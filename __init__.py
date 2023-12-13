@@ -2,6 +2,11 @@ import time
 import json
 from IPython.display import HTML
 
+_client = None
+def set_client(client):
+    global _client
+    _client = client
+    
 def input_and_run(input, thread_id, assistant_id, **args):
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
