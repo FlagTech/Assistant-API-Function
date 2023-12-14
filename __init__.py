@@ -99,7 +99,7 @@ def show_html(response):
 
 
 
-def chat_with_functions(user_input, thread_id,  assistant_id):
+def chat(user_input, thread_id,  assistant_id):
     run, message = submit_message(user_input, thread_id, assistant_id)
     run = wait_on_run(run)
     if run.status == 'completed':
@@ -109,3 +109,23 @@ def chat_with_functions(user_input, thread_id,  assistant_id):
         show_html(response)
     else:
         print(run.status)
+
+def chat_with_function(user_input, thread_id,  assistant_id):
+    run, message = submit_message(user_input, thread_id, assistant_id)
+    while True:
+        run = wait_on_run(run)
+        if run.status == 'requires_action':
+            print('搜尋中...')
+            tool_calls = run.required_action.submit_tool_outputs.tool_calls
+            outputs = call_tools(tool_calls, tools_table)
+            run = client.beta.threads.runs.submit_tool_outputs(
+                thread_id=thread_id,
+                run_id=run.id,
+                tool_outputs = outputs
+            )
+        elif run.status == 'completed':
+            break
+    # 處理模型回覆
+    response = get_response(thread_id, after=message.id)
+    for data in response:
+            print(f'AI 回覆：{data.content[0].text.value}')
