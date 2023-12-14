@@ -99,32 +99,13 @@ def show_html(response):
 
 
 
-def chat_with_functions(user_input, ass_id, thread_id):
-    if not user_input: # 沒有輸入就結束對話
-        return thread_id
-    else:              # 在既有的討論串上繼續對話
-        run, message = submit_message(ass_id, thread_id, user_input)
-    print(ass_id)
-    print(thread_id)
-    print(run.id)
-    
-    done = False
-    while not done:
-        run = wait_on_run(run) # 等待產生回覆
-        if run.status == 'requires_action':
-            tool_calls = run.required_action.submit_tool_outputs.tool_calls
-            outputs = call_tools(tool_calls, tools_table)
-            print(outputs)
-            # 把結果傳回
-            run = _client.beta.threads.runs.submit_tool_outputs(
-                thread_id=thread_id,
-                run_id=run.id,
-                tool_outputs = outputs
-            )
-        elif run.status == 'completed':
-            done = True
-
-    # 處理模型回覆
-    response = get_response(thread_id, after=message.id)
-    response = handle_model_response(response)
-    return response
+def chat_with_functions(user_input, thread_id,  assistant_id):
+    run, message = submit_message(user_input', thread_id, assistant_id)
+    run = wait_on_run(run)
+    if run.status == 'completed':
+        response = get_response(thread_id,after=message.id)
+        for data in response:
+            print(f'AI 回覆：{data.content[0].text.value}')
+        show_html(response)
+    else:
+        print(run.status)
