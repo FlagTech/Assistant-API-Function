@@ -110,7 +110,7 @@ def chat(user_input, thread_id,  assistant_id):
     else:
         print(run.status)
 
-def chat_with_function(user_input, thread_id,  assistant_id):
+def chat_with_functions(user_input, thread_id,  assistant_id):
     run, message = submit_message(user_input, thread_id, assistant_id)
     while True:
         run = wait_on_run(run)
