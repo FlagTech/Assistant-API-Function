@@ -100,7 +100,7 @@ def show_html(response):
 
 
 def chat_with_functions(user_input, thread_id,  assistant_id):
-    run, message = submit_message(user_input', thread_id, assistant_id)
+    run, message = submit_message(user_input, thread_id, assistant_id)
     run = wait_on_run(run)
     if run.status == 'completed':
         response = get_response(thread_id,after=message.id)
