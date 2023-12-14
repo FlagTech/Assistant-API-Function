@@ -38,20 +38,6 @@ def submit_message(assistant_id, thread_id, user_message, **options):
     )
     return run, message
 
-def input_and_run(input, thread_id, assistant_id, **args):
-    message = _client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=input,
-        **args
-    )
-    run = _client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
-
-    return message, run
-
 def wait_on_run(run):
     print('-' * 35)
     while run.status == "queued" or run.status == "in_progress":
@@ -99,43 +85,19 @@ def call_tools(tool_calls, functions_table):
                 break
     return tool_outputs
 
-def show_html(messages):
-    # 找出有文件內容的對話物件
-    index = len(messages.data) - 1
-    # 找到文件位置
-    file_index = messages.data[index].content[0].text.annotations
+def show_html(response):
+    for message in response.data:
+        for item in message:
+            if 'file_ids' in item[0] and len(item[1]) != 0:
+                for num,file in enumerate(item[1]):
+                    content = _client.files.content(file)
+                    # 儲存 HTML
+                    content.stream_to_file(f'test{num}.html')
+                    # 顯示 HTML
+                    html_content = content.content.decode('utf-8')
+                    display(HTML(html_content))
 
-    if len(file_index) != 0:
-        file_ids = file_index[0].file_path.file_id
-        content = _client.files.content(file_ids)
-        # 儲存 HTML
-        content.stream_to_file('test.html')
-        # 顯示 HTML
-        html_content = content.content.decode('utf-8')
-        display(HTML(html_content))
 
-def handle_model_response(response):
-    for item in response.data[0].content:
-        item_str = str(item)
-        #檢查回覆物件的文字是否符合特定物件名稱
-        if 'MessageContentImageFile' in item_str:
-            #提取模型圖片輸出
-            response_image_id = item.image_file.file_id
-            response_image = _client.files.content(response_image_id)
-            image_data_bytes = response_image.read()
-            #儲存圖片
-            with open("response_img.png", "wb") as file:
-                file.write(image_data_bytes)
-                print(f'已儲存模型回覆之圖片：response_img.png({response_image_id})')
-        elif 'MessageContentText' in item_str:
-            #處理annotations
-            if item.text.annotations:
-                for TextAnnotationFilePath in item.text.annotations:
-                    print('文字輸出備註中包含檔案：',
-                          TextAnnotationFilePath.file_path.file_id) 
-            #提取模型純文字輸出
-            response_text = item.text.value
-    return response_text
 
 def chat_with_functions(user_input, ass_id, thread_id):
     if not user_input: # 沒有輸入就結束對話
