@@ -9,7 +9,7 @@ def set_client(client):
     global _client
     _client = client
 
-def submit_message(assistant_id, thread_id, user_message, **options):
+def submit_message(user_message, thread_id, assistant_id, **options):
     try:
         message = _client.beta.threads.messages.create(
             thread_id=thread_id, role="user",
