@@ -89,10 +89,10 @@ def show_html(response):
     for message in response.data:
         for item in message:
             if 'file_ids' in item[0] and len(item[1]) != 0:
-                for num,file in enumerate(item[1]):
+                for file in item[1]:
                     content = _client.files.content(file)
                     # 儲存 HTML
-                    content.stream_to_file(f'test{num}.html')
+                    content.stream_to_file('test.html')
                     # 顯示 HTML
                     html_content = content.content.decode('utf-8')
                     display(HTML(html_content))
@@ -104,11 +104,10 @@ def chat(user_input, thread_id,  assistant_id):
     run = wait_on_run(run)
     if run.status == 'completed':
         response = get_response(thread_id,after=message.id)
-        for data in response:
-            print(f'AI 回覆：{data.content[0].text.value}')
-        show_html(response)
+        return response
+       
     else:
-        print(run.status)
+        return f'{run.status}, 請重新執行'
 
 def chat_with_functions(user_input, thread_id,  assistant_id):
     run, message = submit_message(user_input, thread_id, assistant_id)
@@ -127,5 +126,4 @@ def chat_with_functions(user_input, thread_id,  assistant_id):
             break
     # 處理模型回覆
     response = get_response(thread_id, after=message.id)
-    for data in response:
-            print(f'AI 回覆：{data.content[0].text.value}')
+    return response
