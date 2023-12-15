@@ -5,7 +5,6 @@ import re
 from IPython.display import HTML
 
 _client = None
-tools_table = None
 def set_client(client):
     global _client
     _client = client
@@ -110,7 +109,7 @@ def chat(user_input, thread_id,  assistant_id):
     else:
         return f'{run.status}, 請重新執行'
 
-def chat_with_functions(user_input, thread_id,  assistant_id):
+def chat_with_functions(user_input, tools_table, thread_id,  assistant_id):
     run, message = submit_message(user_input, thread_id, assistant_id)
     while True:
         run = wait_on_run(run)
