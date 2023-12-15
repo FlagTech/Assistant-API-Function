@@ -5,6 +5,7 @@ import re
 from IPython.display import HTML
 
 _client = None
+tools_table = None
 def set_client(client):
     global _client
     _client = client
