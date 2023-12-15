@@ -80,7 +80,7 @@ def call_tools(tool_calls, functions_table):
                 func = function['function']
                 tool_outputs.append({
                     'tool_call_id': tool.id,
-                    'output': func(**arguments)
+                    'output': str(func(**arguments))
                 })
                 break
     return tool_outputs
