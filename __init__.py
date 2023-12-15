@@ -117,6 +117,7 @@ def chat_with_functions(user_input, tools_table, thread_id,  assistant_id):
             print('搜尋中...')
             tool_calls = run.required_action.submit_tool_outputs.tool_calls
             outputs = call_tools(tool_calls, tools_table)
+            print(outputs)
             run = _client.beta.threads.runs.submit_tool_outputs(
                 thread_id=thread_id,
                 run_id=run.id,
