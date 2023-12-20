@@ -114,7 +114,7 @@ def chat_with_functions(user_input, tools_table, thread_id,  assistant_id):
     while True:
         run = wait_on_run(run)
         if run.status == 'requires_action':
-            print('搜尋中...')
+            print('生成中...')
             tool_calls = run.required_action.submit_tool_outputs.tool_calls
             outputs = call_tools(tool_calls, tools_table)
             run = _client.beta.threads.runs.submit_tool_outputs(
